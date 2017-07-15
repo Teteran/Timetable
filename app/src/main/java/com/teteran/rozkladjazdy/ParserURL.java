@@ -23,7 +23,20 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
 
 
 
-    String URL = "http://pks.zgora.pl/index.php/pasazer/rozklad-jazdy/krosno-odrz.html";
+    private List<Course> courses = new ArrayList<>();
+
+    static String URL,DESTINY;
+
+    ParserURL(int i){
+        if (i==1){
+            URL     = "http://www.pks.zgora.pl/index.php/pasazer/rozklad-jazdy/krosno-odrz.html";
+            DESTINY = "ZIELONA GÓRA";
+        }
+        if (i==2){
+            URL     = "http://www.pks.zgora.pl/index.php/pasazer/rozklad-jazdy/zielona-gora.html";
+            DESTINY = "KROSNO ODRZ.";
+        }
+    }
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -39,10 +52,12 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
             for(int i=0;i<rows.size();i++){
                 Element row = rows.get(i);
                 Elements tds = row.select("td");
-                if(tds.get(0).text().equalsIgnoreCase("ZIELONA GÓRA")  && tds.get(1).text().equalsIgnoreCase("Łagów"))
+                if(tds.get(0).text().equalsIgnoreCase(DESTINY)  && !tds.get(1).text().contains("Trzebule")){
                     rowIndexStart=i;
-                if(!tds.get(0).text().equals("") && i > rowIndexStart)
+                }
+                if(tds.get(0).text().equals(DESTINY) && tds.get(1).text().contains("Trzebule")){
                     rowIndexStop=i;
+                 }
             }
 
             for(int i=rowIndexStart;i<rowIndexStop;i++){
@@ -55,7 +70,6 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
                     }
                 }
             }
-            Log.d("..","Done");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,11 +80,12 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
         String[] fields = string.split(" ");
         parseHTML(html);
         Course c = new Course(fields[0],fields[1],parseHTML(html));
-        MainActivity.courses.add(c);
+        courses.add(c);
 
     }
 
     private List<String> parseHTML(String html){
+        html = html.replaceAll("&oacute;","ó");
         Pattern pattern = Pattern.compile("&lt;/span&gt;(.*?)&lt;/li&gt;");
         Matcher matcher = pattern.matcher(html);
         List<String> details = new ArrayList<>();
@@ -83,5 +98,7 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
 
 
 
-
+    public List<Course> getCourses() {
+        return courses;
+    }
 }

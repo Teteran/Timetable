@@ -17,42 +17,83 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static List<Course> courses = new ArrayList<>();
+
     public static AdapterForCourse adapter = null;
+
+    public  List<Course> KOCourses = new ArrayList<>();
+    public  List<Course> ZGCourses = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ListView list = (ListView) findViewById(R.id.list);
+        final ListView list = (ListView) findViewById(R.id.list);
 
         //Spinner--Start//
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-        ArrayAdapter<CharSequence> spinneAdapter = ArrayAdapter.createFromResource(
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 this, R.array.relations_arrays, R.layout.spinner_item);
-        spinneAdapter.setDropDownViewResource(R.layout.spinner_item);
-        spinner.setAdapter(spinneAdapter);
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner.setAdapter(spinnerAdapter);
         //Spinner--End//
 
+        ParserURL koParser = new ParserURL(1);
         try {
-            (new ParserURL()).execute().get();
+            koParser.execute().get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        KOCourses = koParser.getCourses();
 
-        adapter = new AdapterForCourse(this, android.R.layout.simple_list_item_1, courses);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ParserURL zgParser = new ParserURL(2);
+        try {
+            zgParser.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        ZGCourses = zgParser.getCourses();
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                final Dialog dialog = new Dialog(MainActivity.this);
-                dialog.setContentView(R.layout.details_dialog_layout);
-                courses.get(position).createView(dialog);
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0) {
+                    adapter = new AdapterForCourse(getApplicationContext(), android.R.layout.simple_list_item_1, KOCourses);
+                    list.setAdapter(adapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+                            final Dialog dialog = new Dialog(MainActivity.this);
+                            dialog.setContentView(R.layout.details_dialog_layout);
+                            KOCourses.get(position).setDetailsDialog(dialog);
 
-                dialog.show();
+                            dialog.show();
+                        }
+                    });
+                }else if (i==1){
+                    adapter = new AdapterForCourse(getApplicationContext(), android.R.layout.simple_list_item_1, ZGCourses);
+                    list.setAdapter(adapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+                            final Dialog dialog = new Dialog(MainActivity.this);
+                            dialog.setContentView(R.layout.details_dialog_layout);
+                            ZGCourses.get(position).setDetailsDialog(dialog);
+
+                            dialog.show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            ///////////////////////////////////////////////////////////
             }
         });
 

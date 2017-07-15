@@ -41,8 +41,6 @@ public class AdapterForCourse extends ArrayAdapter<Course> {
         ((TextView)courseView.findViewById(R.id.Time)).setText(course.getTime());
         ((TextView)courseView.findViewById(R.id.Symbol)).setText(course.getType());
 
-
-
         return courseView;
     }
 }

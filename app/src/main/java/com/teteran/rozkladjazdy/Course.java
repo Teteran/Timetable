@@ -49,7 +49,7 @@ public class Course {
         return time+"[3]"+type;
     }
 
-    public void createView(Dialog dialog) {
+    public void setDetailsDialog(Dialog dialog) {
         TextView timeV = (TextView) dialog.findViewById(R.id.time);
         timeV.setText(time);
 
