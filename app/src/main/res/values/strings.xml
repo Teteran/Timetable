@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AndroidJSoup</string>
+    <string name="app_name">Rozkład Jazdy</string>
     <string name="action_settings">Settings</string>
+
+    <string-array name="relations_arrays">
+        <item>Krosno Odrz. - Zielona Góra</item>
+        <item>Zielona Góra - Krosno Odrz.</item>
+    </string-array>
 
 </resources>

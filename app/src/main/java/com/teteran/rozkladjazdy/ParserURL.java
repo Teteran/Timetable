@@ -12,6 +12,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Kacper on 2017-07-14.
@@ -47,8 +49,10 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
                 Element row = rows.get(i);
                 Elements tds = row.select("td");
                 for(int j=2;j<tds.size();j++){
-                    if (tds.get(j).text().contains("*"))
-                        addCourse(tds.get(j).text());
+                    if (tds.get(j).text().contains("*")) {
+                        addCourse(tds.get(j).text(),tds.get(j).toString());
+
+                    }
                 }
             }
             Log.d("..","Done");
@@ -58,14 +62,24 @@ public class ParserURL extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    public void addCourse(String string){
+    public void addCourse(String string, String html){
         String[] fields = string.split(" ");
-        Course c = new Course(fields[0],fields[1]);
+        parseHTML(html);
+        Course c = new Course(fields[0],fields[1],parseHTML(html));
         MainActivity.courses.add(c);
-
 
     }
 
+    private List<String> parseHTML(String html){
+        Pattern pattern = Pattern.compile("&lt;/span&gt;(.*?)&lt;/li&gt;");
+        Matcher matcher = pattern.matcher(html);
+        List<String> details = new ArrayList<>();
+        while (matcher.find()) {
+            details.add(matcher.group(1));
+        }
+
+        return details;
+    }
 
 
 
